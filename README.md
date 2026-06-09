@@ -32,7 +32,7 @@ It's lightweight, opt-in, and safe by design: it never edits, deletes, reorders,
 
 ### From the Chrome Web Store (recommended)
 
-1. Visit the [Chrome Web Store listing](ADD_YOUR_STORE_URL).
+1. Visit the [Chrome Web Store listing](https://chromewebstore.google.com/detail/notion-turbo-%E2%80%94-long-chat/fjkndmidlkigmfdobibghmhlpkpecabe).
 2. Click **Add to browser**.
 
 Works on Google Chrome, Microsoft Edge, and other Chromium-based browsers.
@@ -83,7 +83,7 @@ Google Chrome, Microsoft Edge, and other Chromium-based browsers (Manifest V3).
 ## Support
 
 Found a bug or have a feature request? Please open an issue:
-\[ADD\_YOUR\_GITHUB\_ISSUES\_URL]
+[GitHub Issues](https://github.com/danielvaitekunas/Notion-Turbo/issues)
 
 When reporting a performance issue, attaching a **diagnostic report** (popup → Download diagnostic report) helps a lot.
 
