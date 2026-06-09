@@ -1,8 +1,8 @@
 # Notion Turbo — Long Chat Optimizer
 
-!\[License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-!\[Manifest V3](https://img.shields.io/badge/Manifest-V3-blue.svg)
-!\[Browsers](https://img.shields.io/badge/Chrome%20%7C%20Edge%20%7C%20Chromium-supported-success.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue.svg)
+![Browsers](https://img.shields.io/badge/Chrome%20%7C%20Edge%20%7C%20Chromium-supported-success.svg)
 
 > Speed up long Notion AI chats — faster loading and lower CPU/RAM by rendering only your recent messages. Your full history stays safe in Notion.
 
