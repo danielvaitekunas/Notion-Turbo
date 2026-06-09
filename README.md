@@ -8,8 +8,6 @@
 
 > Not affiliated with, endorsed by, or sponsored by Notion Labs, Inc. “Notion” is a trademark of Notion Labs, Inc. This is an independent, community-built extension.
 
-\---
-
 ## Overview
 
 Notion Turbo keeps long Notion AI chats fast. As an AI conversation grows, Notion can start to lag — typing stutters, scrolling jumps, memory use climbs, and the chat takes several seconds to open. Notion Turbo fixes this by loading only your most recent exchanges, so even very long threads stay smooth and quick to use.
@@ -94,8 +92,4 @@ Issues and pull requests are welcome. For larger changes, please open an issue f
 ## License
 
 [MIT](LICENSE) © 2026 Daniel Vaitekunas
-
-\---
-
 *Not affiliated with, endorsed by, or sponsored by Notion Labs, Inc. “Notion” is a trademark of Notion Labs, Inc.*
-
