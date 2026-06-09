@@ -6,7 +6,7 @@
 
 > Speed up long Notion AI chats — faster loading and lower CPU/RAM by rendering only your recent messages. Your full history stays safe in Notion.
 
-> \\\*\\\*Not affiliated with, endorsed by, or sponsored by Notion Labs, Inc.\\\*\\\* “Notion” is a trademark of Notion Labs, Inc. This is an independent, community-built extension.
+> Not affiliated with, endorsed by, or sponsored by Notion Labs, Inc. “Notion” is a trademark of Notion Labs, Inc. This is an independent, community-built extension.
 
 \---
 
@@ -60,7 +60,7 @@ Works on Google Chrome, Microsoft Edge, and other Chromium-based browsers.
 |**Debug**|Verbose console logging + diagnostic capture. Leave **off** for best performance.|
 |**Download diagnostic report**|Saves a JSON report you can attach when filing an issue.|
 
-> Tip: an \\\*\\\*exchange\\\*\\\* = one of your prompts plus its full response. Lower numbers = lighter pages.
+> Tip: an exchange = one of your prompts plus its full response. Lower numbers = lighter pages.
 
 ## How it works
 
