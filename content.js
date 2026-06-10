@@ -1,5 +1,5 @@
 /*
- * Notion Turbo — isolated-world CSS layer + config relay  (v1.0.3)
+ * Notion Turbo — isolated-world CSS layer + config relay  (v1.0.4)
  * -----------------------------------------------------------------
  * Two responsibilities:
  *  1. CSS optimizer: marks the chat's message list so the browser can skip
@@ -37,7 +37,7 @@
 
   if (window.top !== window.self) return;
 
-  const VERSION = "1.0.3";
+  const VERSION = "1.0.4";
 
   const DEFAULTS = {
     enabled: true,
@@ -47,8 +47,8 @@
     containerSelector: "",
     debug: false,
     monitor: false,
-    trim: false, // forwarded to the MAIN-world network agent (page.js)
-    keepRecords: 25, // how many recent exchanges to keep when trimming
+    trim: true, // forwarded to the MAIN-world network agent (page.js)
+    keepRecords: 10, // how many recent exchanges to keep when trimming
   };
 
   const MARK = "data-notion-turbo";
@@ -84,12 +84,6 @@
   let selfMax = 0;
   let lastDomRelay = 0;
 
-  console.log(
-    `%c[NotionTurbo]%c v${VERSION} injected on ${location.host}`,
-    "color:#fff;background:#0b6bcb;padding:1px 4px;border-radius:3px",
-    "color:inherit",
-  );
-
   const log = (...a) => {
     if (config.debug) console.log("[NotionTurbo]", ...a);
   };
@@ -106,7 +100,7 @@
         new CustomEvent("notion-turbo-config", {
           detail: {
             trim: !!config.trim,
-            keepRecords: Number(config.keepRecords) || 25,
+            keepRecords: Number(config.keepRecords) || 10,
             debug: !!config.debug,
           },
         }),
@@ -176,7 +170,7 @@
   // Returns 0 (no-op) unless there are strictly more exchanges than the window.
   function computeHideCount() {
     if (!config.trim || !container) return 0;
-    const keep = Math.max(1, Number(config.keepRecords) || 25);
+    const keep = Math.max(1, Number(config.keepRecords) || 10);
     const rows = container.children;
     const total = rows.length;
     const prompts = [];

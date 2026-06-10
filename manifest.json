@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Notion Turbo — Long Chat Optimizer",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "minimum_chrome_version": "111",
   "description": "Keeps long Notion AI chats fast: reduces lag in large conversations so they stay smooth, responsive, and quick to load.",
   "icons": {
     "16": "icons/icon16.png",
@@ -13,10 +14,7 @@
     "storage"
   ],
   "host_permissions": [
-    "https://*.notion.com/*",
-    "https://notion.com/*",
-    "https://*.notion.so/*",
-    "https://notion.so/*"
+    "https://*.notion.com/*"
   ],
   "content_scripts": [
     {
@@ -24,10 +22,7 @@
         "page.js"
       ],
       "matches": [
-        "https://*.notion.com/*",
-        "https://notion.com/*",
-        "https://*.notion.so/*",
-        "https://notion.so/*"
+        "https://*.notion.com/*"
       ],
       "run_at": "document_start",
       "world": "MAIN"
@@ -37,10 +32,7 @@
         "content.js"
       ],
       "matches": [
-        "https://*.notion.com/*",
-        "https://notion.com/*",
-        "https://*.notion.so/*",
-        "https://notion.so/*"
+        "https://*.notion.com/*"
       ],
       "run_at": "document_start",
       "world": "ISOLATED"

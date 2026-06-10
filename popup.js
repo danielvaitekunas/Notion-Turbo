@@ -1,4 +1,4 @@
-/* Notion Turbo — popup controller (v1.0.3) */
+/* Notion Turbo — popup controller (v1.0.4) */
 (() => {
   "use strict";
 
@@ -10,11 +10,13 @@
     containerSelector: "",
     debug: false,
     monitor: false,
-    trim: false,
-    keepRecords: 25,
+    trim: true,
+    keepRecords: 10,
   };
 
-  // id -> { prop, cast? }
+  // id -> { prop, cast? }. These map 1:1 onto stored config keys read by the
+  // content script / page script. The master switch is NOT here: it is a
+  // derived control that drives `enabled` + `trim` together.
   const FIELDS = {
     enabled: { prop: "checked" },
     trim: { prop: "checked" },
@@ -81,6 +83,19 @@
     persistKeep(n);
   }
 
+  // − / + stepper buttons next to the keep field.
+  function stepKeep(delta) {
+    const inp = $("keepRecords");
+    if (!inp || inp.disabled) return;
+    const digits = (inp.value.match(/\d+/g) || []).join("");
+    let n = parseInt(digits, 10);
+    if (!Number.isFinite(n)) n = lastValidKeep;
+    n = Math.min(KEEP_MAX, Math.max(KEEP_MIN, n + delta));
+    inp.value = String(n);
+    setKeepError("");
+    persistKeep(n);
+  }
+
   function flashSaved() {
     const s = $("saved");
     if (!s) return;
@@ -100,8 +115,43 @@
     const on = $("trim").checked;
     const row = $("keepRecordsRow");
     const input = $("keepRecords");
+    const minus = $("keepMinus");
+    const plus = $("keepPlus");
     if (row) row.classList.toggle("dim", !on);
     if (input) input.disabled = !on;
+    if (minus) minus.disabled = !on;
+    if (plus) plus.disabled = !on;
+  }
+
+  // The master switch summarises the two boost features:
+  //   both on  -> ON (checked)
+  //   both off -> OFF (unchecked)
+  //   mixed    -> CUSTOM (indeterminate) so the popup never lies about state.
+  function reflectMaster() {
+    const e = $("enabled");
+    const t = $("trim");
+    const m = $("master");
+    const tag = $("masterTag");
+    if (!e || !t || !m) return;
+    const some = e.checked || t.checked;
+    const both = e.checked && t.checked;
+    m.checked = some;
+    m.indeterminate = some && !both;
+    if (tag) {
+      if (both) { tag.textContent = "On"; tag.className = "tag on"; }
+      else if (!some) { tag.textContent = "Off"; tag.className = "tag off"; }
+      else { tag.textContent = "Custom"; tag.className = "tag custom"; }
+    }
+  }
+
+  // Flipping the master forces both features to the same state.
+  function onMasterToggle() {
+    const on = $("master").checked;
+    $("enabled").checked = on;
+    $("trim").checked = on;
+    reflectTrimUI();
+    reflectMaster();
+    saveConfig();
   }
 
   function loadConfig() {
@@ -119,6 +169,7 @@
       if (keepEl) keepEl.value = String(keep);
       reflectModeUI();
       reflectTrimUI();
+      reflectMaster();
       setKeepError("");
     });
   }
@@ -188,11 +239,16 @@
       el.addEventListener(evt, () => {
         if (id === "mode") reflectModeUI();
         if (id === "trim") reflectTrimUI();
+        if (id === "enabled" || id === "trim") reflectMaster();
         saveConfig();
       });
     }
 
-    // Validated integer field for "recent exchanges to keep".
+    // Master switch drives enabled + trim together.
+    const master = $("master");
+    if (master) master.addEventListener("change", onMasterToggle);
+
+    // Validated integer field + steppers for "recent exchanges to keep".
     const keepEl = $("keepRecords");
     if (keepEl) {
       keepEl.addEventListener("input", onKeepInput);
@@ -200,9 +256,22 @@
       keepEl.addEventListener("blur", onKeepCommit);
       keepEl.addEventListener("keydown", (ev) => { if (ev.key === "Enter") keepEl.blur(); });
     }
+    const minus = $("keepMinus");
+    const plus = $("keepPlus");
+    if (minus) minus.addEventListener("click", () => stepKeep(-1));
+    if (plus) plus.addEventListener("click", () => stepKeep(1));
 
     const diagBtn = $("diagSave");
     if (diagBtn) diagBtn.addEventListener("click", requestDiagSave);
+
+    // Help "?" badges are informational only: a click/keypress must not toggle
+    // a section, focus a field, or flip a switch.
+    document.querySelectorAll(".help").forEach((el) => {
+      el.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+      el.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") ev.preventDefault();
+      });
+    });
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "local" && changes.status) renderStatus(changes.status.newValue);

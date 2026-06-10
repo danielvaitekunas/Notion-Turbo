@@ -1,5 +1,5 @@
 /*
- * Notion Turbo — MAIN-world network agent  (v1.0.3)
+ * Notion Turbo — MAIN-world network agent  (v1.0.4)
  * --------------------------------------------------
  * Runs in the page's OWN JS world and patches the same fetch the Notion app
  * uses, so it can shape the AI-chat transcript before React ever sees it.
@@ -72,7 +72,7 @@
   if (window.__NOTION_TURBO_PAGE__) return;
   window.__NOTION_TURBO_PAGE__ = true;
 
-  const VERSION = "1.0.3";
+  const VERSION = "1.0.4";
   const MAX_BODY = 30000000; // 30MB hard cap on bodies we will parse
 
   // Notion's record-loading endpoints — the only places the transcript lives.
@@ -86,7 +86,7 @@
   // newest-safe (see tryTrim) so in-progress streaming answers are never cut.
   const TRIM_SYNC = /\/api\/v3\/(syncRecordValues|loadCachedPageChunk|loadPageChunk)/i;
 
-  let cfg = { trim: false, keepRecords: 25, debug: false };
+  let cfg = { trim: false, keepRecords: 10, debug: false };
   let lastBannerKey = "";
   let lastBannerAt = 0;
   // Read-only DOM snapshot pushed from the isolated-world content script (which
@@ -166,12 +166,6 @@
     log("trim:", reason, info || "");
   }
 
-  console.log(
-    `%c[NotionTurbo:net]%c v${VERSION} MAIN-world agent ready`,
-    "color:#fff;background:#6a0bcb;padding:1px 4px;border-radius:3px",
-    "color:inherit",
-  );
-
   // Small purple toast confirming a trim/diag happened (throttled).
   function banner(msg) {
     try {
@@ -184,7 +178,7 @@
           "position:fixed", "bottom:16px", "left:16px", "z-index:2147483647",
           "font:12px/1.3 -apple-system,Segoe UI,Roboto,sans-serif",
           "padding:8px 11px", "border-radius:8px",
-          "background:rgba(106,11,203,0.94)", "color:#fff",
+          "background:rgba(33,33,36,0.96)", "color:#fff",
           "box-shadow:0 2px 12px rgba(0,0,0,0.25)", "pointer-events:none",
         ].join(";");
         document.documentElement.appendChild(el);
@@ -324,7 +318,7 @@
     const blocksPresent = !!rm.block; // we still trim, but only ever touch thread_message keys
     const tm = rm.thread_message;
     const ids = Object.keys(tm);
-    const keep = Math.max(1, Number(cfg.keepRecords) || 25);
+    const keep = Math.max(1, Number(cfg.keepRecords) || 10);
     // Light-session model: only the initial bulk load is ever trimmed.
     const isInitialLoad = LOAD_SYNC.test(p);
 
@@ -528,7 +522,7 @@
     const wasTrim = cfg.trim;
     cfg = {
       trim: !!d.trim,
-      keepRecords: Math.max(1, Number(d.keepRecords) || 25),
+      keepRecords: Math.max(1, Number(d.keepRecords) || 10),
       debug: !!d.debug,
     };
     if (cfg.trim && !wasTrim) log(`trimmer ON — keeping last ${cfg.keepRecords} exchanges. Reload the chat to apply.`);

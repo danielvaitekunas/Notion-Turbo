@@ -7,202 +7,358 @@
     <style>
       :root {
         color-scheme: light dark;
-        --accent: #6a0bcb;
-        --accent-soft: rgba(106, 11, 203, 0.12);
-        --ok: #2e7d32;
-        --off: #b03030;
-        --line: rgba(128, 128, 128, 0.22);
+        --bg: #ffffff;
+        --surface: #f7f7f5;
+        --text: #32302c;
+        --muted: #79766f;
+        --line: #e9e8e4;
+        --line-strong: #dcdbd6;
+        --accent: #2f6fde;
+        --accent-weak: #eaf1fc;
+        --ok: #4f9d63;
+        --off: #c25149;
+        --knob: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1f1f1e;
+          --surface: #2a2a28;
+          --text: #eceae4;
+          --muted: #9d9a92;
+          --line: #ffffff14;
+          --line-strong: #ffffff24;
+          --accent: #6ba3f0;
+          --accent-weak: #6ba3f01f;
+          --ok: #63b577;
+          --off: #e28279;
+          --knob: #f3f1ec;
+        }
       }
       * { box-sizing: border-box; }
+      html, body { background: var(--bg); }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        width: 320px; margin: 0; padding: 0; font-size: 13px; line-height: 1.45;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        width: 360px; margin: 0; color: var(--text);
+        font-size: 13px; line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
       }
+      h1, p { margin: 0; }
+
+      /* ---- header ---- */
       header {
-        display: flex; align-items: center; gap: 9px;
-        padding: 14px 16px 12px;
-        border-bottom: 1px solid var(--line);
+        display: flex; align-items: center; gap: 10px;
+        padding: 15px 17px 13px;
       }
-      .logo {
-        width: 26px; height: 26px; border-radius: 7px; flex: 0 0 auto;
-        background: linear-gradient(135deg, #7b1fe0, #4a06a0);
-        display: grid; place-items: center; color: #fff; font-size: 15px;
+      .head-text h1 { font-size: 14.5px; font-weight: 600; letter-spacing: -0.1px; }
+      .status-line {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 11.5px; color: var(--muted); margin-top: 1px;
       }
-      header h1 { font-size: 14px; margin: 0; font-weight: 650; }
-      header .sub { font-size: 11px; margin: 0; opacity: 0.6; }
-      main { padding: 12px 16px 6px; }
-      section { margin-bottom: 14px; }
-      .status {
-        display: flex; align-items: center; gap: 8px;
-        padding: 9px 11px; border-radius: 9px; margin-bottom: 14px;
-        background: var(--accent-soft); font-size: 12px;
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; opacity: 0.6; }
+      .dot.on { background: var(--ok); opacity: 1; }
+      .dot.off { background: var(--off); opacity: 1; }
+
+      main { padding: 2px 17px 4px; }
+
+      /* ---- master / hero card ---- */
+      .hero {
+        display: flex; align-items: center; gap: 12px;
+        padding: 13px 14px; border: 1px solid var(--line-strong);
+        border-radius: 11px; background: var(--surface);
       }
-      .dot { width: 9px; height: 9px; border-radius: 50%; background: #999; flex: 0 0 auto; }
-      .dot.on { background: var(--ok); }
-      .dot.off { background: var(--off); }
-      .opt {
-        display: flex; align-items: flex-start; justify-content: space-between;
-        gap: 12px; padding: 9px 0;
+      .hero-text { flex: 1; min-width: 0; }
+      .hero-title-row { display: flex; align-items: center; gap: 8px; }
+      .hero-title { font-size: 13.5px; font-weight: 600; }
+      .tag {
+        font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
+        padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line-strong);
+        color: var(--muted); text-transform: uppercase;
       }
-      .opt + .opt { border-top: 1px solid var(--line); }
-      .opt .label { font-weight: 600; display: flex; align-items: center; gap: 6px; }
-      .opt .desc { font-size: 11px; opacity: 0.62; margin-top: 2px; }
-      .opt .text { flex: 1; min-width: 0; }
-      .badge {
-        font-size: 9.5px; font-weight: 700; letter-spacing: 0.3px;
-        text-transform: uppercase; padding: 1px 6px; border-radius: 999px;
-        background: var(--accent); color: #fff;
+      .tag.on { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+      .tag.off { color: var(--muted); }
+      .tag.custom { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+      .hero-desc { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+      /* ---- keep field ---- */
+      .field { padding: 14px 2px 4px; transition: opacity 0.15s; }
+      .field.dim { opacity: 0.45; pointer-events: none; }
+      .field-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .field-head label { font-weight: 600; }
+      .stepper { display: flex; align-items: center; gap: 0; }
+      .step {
+        width: 26px; height: 28px; border: 1px solid var(--line-strong);
+        background: var(--bg); color: var(--text); cursor: pointer;
+        font-size: 15px; line-height: 1; display: grid; place-items: center;
       }
-      /* toggle switch */
-      .switch { position: relative; width: 38px; height: 22px; flex: 0 0 auto; margin-top: 1px; }
-      .switch input { opacity: 0; width: 0; height: 0; }
+      .step:first-child { border-radius: 7px 0 0 7px; }
+      .step:last-child { border-radius: 0 7px 7px 0; }
+      .step:hover { background: var(--surface); }
+      .step:active { background: var(--accent-weak); }
+      .keep-input {
+        width: 46px; height: 28px; text-align: center; font: inherit; font-size: 13px;
+        font-variant-numeric: tabular-nums; font-weight: 600;
+        border: 1px solid var(--line-strong); border-left: 0; border-right: 0;
+        background: var(--bg); color: var(--text);
+      }
+      .keep-input:focus { outline: none; background: var(--accent-weak); }
+      .keep-input.invalid { color: var(--off); }
+      .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+      .err { color: var(--off); font-size: 11px; margin-top: 6px; display: none; }
+
+      /* ---- toggle switch ---- */
+      .switch { position: relative; width: 34px; height: 20px; flex: 0 0 auto; }
+      .switch.lg { width: 42px; height: 24px; }
+      .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
       .slider {
-        position: absolute; inset: 0; cursor: pointer; border-radius: 999px;
-        background: rgba(128,128,128,0.4); transition: 0.18s;
+        position: absolute; inset: 0; border-radius: 999px; pointer-events: none;
+        background: var(--line-strong); transition: background 0.16s;
       }
       .slider::before {
-        content: ""; position: absolute; height: 16px; width: 16px; left: 3px; top: 3px;
-        background: #fff; border-radius: 50%; transition: 0.18s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        content: ""; position: absolute; height: 14px; width: 14px; left: 3px; top: 3px;
+        background: var(--knob); border-radius: 50%; transition: transform 0.16s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.25);
       }
+      .switch.lg .slider::before { height: 18px; width: 18px; left: 3px; top: 3px; }
       .switch input:checked + .slider { background: var(--accent); }
-      .switch input:checked + .slider::before { transform: translateX(16px); }
-      .switch input:disabled + .slider { opacity: 0.4; cursor: default; }
-      /* range row */
-      .range-row { padding: 10px 0 2px; }
-      .range-row.dim { opacity: 0.4; pointer-events: none; }
-      .range-head { display: flex; justify-content: space-between; font-weight: 600; }
-      .range-head .val { color: var(--accent); font-variant-numeric: tabular-nums; }
-      .range-head .keep-input {
-        width: 70px; text-align: right; font: inherit; font-size: 13px;
-        font-variant-numeric: tabular-nums; padding: 3px 7px; border-radius: 6px;
-        color: var(--accent); font-weight: 650; background: var(--accent-soft);
-        border: 1px solid var(--line);
-      }
-      .range-head .keep-input:focus { outline: none; border-color: var(--accent); }
-      .range-head .keep-input.invalid { color: var(--off); border-color: var(--off); background: rgba(176, 48, 48, 0.10); }
-      .err { color: var(--off); font-size: 11px; margin: 5px 0 0; display: none; }
-      input[type="range"] { width: 100%; accent-color: var(--accent); margin: 7px 0 0; }
-      .scale { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.5; }
-      /* advanced */
-      details {
-        border-top: 1px solid var(--line); padding-top: 4px; margin-top: 2px;
-      }
+      .switch input:checked + .slider::before { transform: translateX(14px); }
+      .switch.lg input:checked + .slider::before { transform: translateX(18px); }
+      .switch input:indeterminate + .slider { background: color-mix(in srgb, var(--accent) 55%, var(--line-strong)); }
+      .switch.lg input:indeterminate + .slider::before { transform: translateX(9px); }
+      .switch input:disabled + .slider { opacity: 0.45; }
+      .switch input:focus-visible + .slider { box-shadow: 0 0 0 2px var(--accent-weak), 0 0 0 3px var(--accent); }
+
+      /* ---- advanced ---- */
+      details { margin-top: 12px; border-top: 1px solid var(--line); }
       summary {
-        cursor: pointer; font-size: 12px; font-weight: 600; opacity: 0.8;
-        padding: 8px 0; list-style: none; display: flex; align-items: center; gap: 6px;
+        cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted);
+        padding: 11px 2px; list-style: none; display: flex; align-items: center; gap: 7px;
+        user-select: none;
       }
+      summary:hover { color: var(--text); }
       summary::-webkit-details-marker { display: none; }
-      summary::before { content: "›"; transition: 0.15s; display: inline-block; }
-      details[open] summary::before { transform: rotate(90deg); }
-      .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 9px 0; }
-      .row label { flex: 1; }
-      input[type="number"], input[type="text"], select {
-        font-size: 12px; padding: 4px 6px; border-radius: 6px; color: inherit;
-        border: 1px solid var(--line); background: transparent;
+      summary .chev { transition: transform 0.15s; font-size: 10px; opacity: 0.8; }
+      details[open] summary .chev { transform: rotate(90deg); }
+      .group-title {
+        font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;
+        color: var(--muted); margin: 12px 0 4px; font-weight: 600;
       }
-      input[type="number"] { width: 64px; }
-      .full input[type="text"] { width: 100%; margin-top: 4px; }
-      .group-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.5; margin: 10px 0 2px; }
-      .hint { font-size: 11px; opacity: 0.6; margin: 4px 0 0; }
-      code { background: var(--accent-soft); padding: 1px 4px; border-radius: 4px; font-size: 11px; }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 2px; }
+      .row + .row { border-top: 1px solid var(--line); }
+      .row > div { flex: 1; min-width: 0; }
+      .row label { flex: 1; font-weight: 500; }
+      .row .switch { flex: 0 0 auto; }
+      .row .sub { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+      .row .ctl { flex: 1; }
+      select, input[type="number"], input[type="text"].adv {
+        font: inherit; font-size: 12px; padding: 5px 7px; border-radius: 6px;
+        color: var(--text); border: 1px solid var(--line-strong); background: var(--bg);
+      }
+      input[type="number"] { width: 70px; }
+      select { cursor: pointer; }
+      .full { padding: 8px 2px; }
+      .full label { font-weight: 500; display: block; }
+      .full input[type="text"] { width: 100%; margin-top: 5px; }
+      code {
+        background: var(--surface); border: 1px solid var(--line);
+        padding: 1px 4px; border-radius: 4px; font-size: 11px;
+      }
       .btn {
-        font: inherit; font-size: 12px; font-weight: 600; padding: 5px 10px;
-        border-radius: 6px; cursor: pointer; color: #fff; background: var(--accent); border: none;
+        font: inherit; font-size: 12px; font-weight: 600; padding: 6px 11px;
+        border-radius: 7px; cursor: pointer; color: var(--text);
+        background: var(--bg); border: 1px solid var(--line-strong);
       }
+      .btn:hover { background: var(--surface); }
       .btn:active { transform: translateY(1px); }
+
+      /* ---- help tooltip ---- */
+      .lbl { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+      .lbl label { flex: 0 1 auto; }
+      .help {
+        position: relative; display: inline-grid; place-items: center;
+        width: 14px; height: 14px; flex: 0 0 auto;
+        border: 1px solid var(--line-strong); border-radius: 50%;
+        color: var(--muted); font-size: 9px; font-weight: 700; line-height: 1;
+        cursor: help; vertical-align: middle; user-select: none;
+      }
+      .help:hover, .help:focus-visible {
+        color: var(--text); border-color: var(--muted); outline: none;
+      }
+      .help::after {
+        content: attr(data-tip);
+        position: absolute; left: 50%; top: calc(100% + 8px);
+        transform: translateX(-50%) translateY(-3px);
+        width: 200px; padding: 8px 10px; z-index: 20;
+        background: var(--text); color: var(--bg);
+        border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+        font-size: 11px; font-weight: 400; line-height: 1.45;
+        letter-spacing: 0; text-transform: none; text-align: left;
+        white-space: normal; opacity: 0; pointer-events: none;
+        transition: opacity 0.13s ease, transform 0.13s ease;
+      }
+      .help::before {
+        content: ""; position: absolute; left: 50%; top: calc(100% + 3px);
+        transform: translateX(-50%); z-index: 21;
+        border: 5px solid transparent; border-bottom-color: var(--text);
+        opacity: 0; transition: opacity 0.13s ease;
+      }
+      .help:hover::after, .help:focus-visible::after {
+        opacity: 1; transform: translateX(-50%) translateY(0);
+      }
+      .help:hover::before, .help:focus-visible::before { opacity: 1; }
+      /* upward variant for tooltips near the popup's bottom edge */
+      .help.up::after {
+        top: auto; bottom: calc(100% + 8px);
+        transform: translateX(-50%) translateY(3px);
+      }
+      .help.up:hover::after, .help.up:focus-visible::after {
+        transform: translateX(-50%) translateY(0);
+      }
+      .help.up::before {
+        top: auto; bottom: calc(100% + 3px);
+        border-bottom-color: transparent; border-top-color: var(--text);
+      }
+
+      /* ---- bug-report steps ---- */
+      .steps {
+        margin: 10px 0 4px; padding-left: 18px;
+        font-size: 11.5px; color: var(--muted); line-height: 1.5;
+      }
+      .steps li { margin: 4px 0; }
+      .steps strong { color: var(--text); font-weight: 600; }
+
+      /* ---- footer ---- */
       footer {
         display: flex; justify-content: space-between; align-items: center;
-        padding: 10px 16px; border-top: 1px solid var(--line);
-        font-size: 11px; opacity: 0.6;
+        padding: 11px 17px; margin-top: 6px; border-top: 1px solid var(--line);
+        font-size: 11px; color: var(--muted);
       }
-      #saved { color: var(--ok); opacity: 0; transition: opacity 0.2s; font-weight: 600; }
+      #version { font-variant-numeric: tabular-nums; }
+      #saved { color: var(--ok); opacity: 0; transition: opacity 0.18s; font-weight: 600; }
       #saved.show { opacity: 1; }
+
+      /* respect users who prefer reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; }
+      }
     </style>
   </head>
   <body>
     <header>
-      <div class="logo">⚡</div>
-      <div>
+      <div class="head-text">
         <h1>Notion Turbo</h1>
-        <p class="sub">Keeps long Notion AI chats fast</p>
+        <p class="status-line"><span class="dot" id="dot"></span><span id="statusText">Checking…</span></p>
       </div>
     </header>
 
     <main>
-      <div class="status">
-        <span class="dot" id="dot"></span>
-        <span id="statusText">Checking…</span>
+      <div class="hero">
+        <div class="hero-text">
+          <div class="hero-title-row">
+            <span class="hero-title">Performance boost</span>
+            <span class="tag off" id="masterTag">Off</span>
+          </div>
+          <p class="hero-desc">Boosts your Notion AI chat performance by skipping off-screen rendering and keeping only recent messages loaded.</p>
+        </div>
+        <label class="switch lg"><input type="checkbox" id="master" /><span class="slider"></span></label>
       </div>
 
-      <section>
-        <div class="opt">
-          <div class="text">
-            <div class="label">Speed up long chats</div>
-            <div class="desc">Lets the browser skip rendering off-screen messages. Always safe.</div>
+      <div class="field" id="keepRecordsRow">
+        <div class="field-head">
+          <label for="keepRecords">Recent messages to keep</label>
+          <div class="stepper">
+            <button type="button" class="step" id="keepMinus" aria-label="Keep fewer">−</button>
+            <input type="text" id="keepRecords" class="keep-input" inputmode="numeric"
+                   autocomplete="off" spellcheck="false" maxlength="3" aria-describedby="keepRecordsErr" />
+            <button type="button" class="step" id="keepPlus" aria-label="Keep more">+</button>
+          </div>
+        </div>
+        <p class="hint">Goes from 1 to 100 messages. Lower means faster. The default of 10 keeps a moderate amount of chat history; try around 5 for maximum speed.</p>
+        <p class="err" id="keepRecordsErr" role="alert"></p>
+      </div>
+
+      <details id="advanced">
+        <summary><span class="chev">›</span> Advanced</summary>
+
+        <div class="group-title">Fine-tune features</div>
+        <div class="row">
+          <div>
+            <label for="enabled">Skip off-screen rendering</label>
+            <p class="sub">Stops the browser painting messages you've scrolled past.</p>
           </div>
           <label class="switch"><input type="checkbox" id="enabled" /><span class="slider"></span></label>
         </div>
-
-        <div class="opt">
-          <div class="text">
-            <div class="label">Show recent exchanges only</div>
-            <div class="desc">Speeds up very long chats by showing only your most recent exchanges (each prompt with its reply). Older exchanges are hidden from view, never deleted — reload the chat to see full history.</div>
+        <div class="row">
+          <div>
+            <label for="trim">Show recent messages only</label>
+            <p class="sub">Drops older messages from the page on load. Kept on Notion's servers — reload to see all.</p>
           </div>
           <label class="switch"><input type="checkbox" id="trim" /><span class="slider"></span></label>
         </div>
 
-        <div class="range-row" id="keepRecordsRow">
-          <div class="range-head">
-            <label for="keepRecords">Recent exchanges to keep</label>
-            <input type="text" id="keepRecords" class="keep-input" inputmode="numeric"
-                   autocomplete="off" spellcheck="false" maxlength="3" aria-describedby="keepRecordsErr" />
-          </div>
-          <p class="hint">Type a whole number from 1 (fastest; recommended 5) to 100 (more history).</p>
-          <p class="err" id="keepRecordsErr" role="alert"></p>
-        </div>
-      </section>
-
-      <details id="advanced">
-        <summary>Advanced</summary>
-
         <div class="group-title">Rendering</div>
         <div class="row">
-          <label for="mode">Off-screen mode</label>
-          <select id="mode">
+          <div class="lbl">
+            <label for="mode">Off-screen mode</label>
+            <span class="help" tabindex="0" role="note" aria-label="What Off-screen mode does" data-tip="Chooses how messages you've scrolled past are handled. Soft hides them but keeps their place so scrolling stays accurate — best for most people. Hard prune removes them from view for a little more speed.">?</span>
+          </div>
+          <select id="mode" class="ctl" style="flex:0 0 auto">
             <option value="soft">Soft (recommended)</option>
             <option value="hard">Hard prune</option>
           </select>
         </div>
         <div class="row" id="keepRow">
-          <label for="keepVisible">Keep recent rows (hard)</label>
+          <div class="lbl">
+            <label for="keepVisible">Keep recent rows (hard)</label>
+            <span class="help" tabindex="0" role="note" aria-label="What Keep recent rows means" data-tip="Only used in Hard prune mode. Sets how many of your most recent messages stay fully visible; older off-screen ones are removed to save memory.">?</span>
+          </div>
           <input type="number" id="keepVisible" min="5" max="500" />
         </div>
         <div class="row">
-          <label for="intrinsicHeight">Est. row height (px)</label>
+          <div class="lbl">
+            <label for="intrinsicHeight">Est. row height (px)</label>
+            <span class="help" tabindex="0" role="note" aria-label="What Est. row height means" data-tip="A rough height (in pixels) for one message. It reserves space for hidden messages so the scrollbar and scrolling stay smooth. The default works for most chats.">?</span>
+          </div>
           <input type="number" id="intrinsicHeight" min="20" max="2000" />
         </div>
         <div class="full">
-          <label for="containerSelector">Container selector (optional)</label>
-          <input type="text" id="containerSelector" placeholder="auto-detect" />
+          <label for="containerSelector">Container selector (optional) <span class="help" tabindex="0" role="note" aria-label="What Container selector means" data-tip="Advanced. A code 'address' for the chat's scrolling area. Leave blank and the extension finds it automatically — only set this if support asks.">?</span></label>
+          <input type="text" id="containerSelector" class="adv" placeholder="auto-detect" />
           <p class="hint">Leave blank to auto-detect. Use Debug to find the exact selector.</p>
         </div>
 
-        <div class="group-title">Diagnostics</div>
+      </details>
+
+      <details id="report">
+        <summary><span class="chev">›</span> Report a bug <span class="help up" tabindex="0" role="note" aria-label="About debug tools and performance" data-tip="These tools are only for troubleshooting. Leaving Debug overlay or Performance monitor on loads extra code and uses more resources, which can reduce the speed boost — keep them off for everyday use.">?</span></summary>
+
+        <ol class="steps">
+          <li>Turn on <strong>Debug overlay</strong> below (and <strong>Performance monitor</strong> if asked).</li>
+          <li>Reload the affected chat, then scroll through the messages that look wrong.</li>
+          <li>Click <strong>Download report</strong> and send the JSON file — it captures structure only, never your message text.</li>
+          <li>Switch the debug tools back off so they don't slow the speed boost.</li>
+        </ol>
+
         <div class="row">
-          <label for="monitor">Performance monitor</label>
+          <div class="lbl">
+            <label for="monitor">Performance monitor</label>
+            <span class="help" tabindex="0" role="note" aria-label="What Performance monitor does" data-tip="Quietly records speed measurements in the browser's developer console so you can see the improvement. Fine to leave off day-to-day.">?</span>
+          </div>
           <label class="switch"><input type="checkbox" id="monitor" /><span class="slider"></span></label>
         </div>
         <div class="row">
-          <label for="debug">Debug overlay</label>
+          <div class="lbl">
+            <label for="debug">Debug overlay</label>
+            <span class="help" tabindex="0" role="note" aria-label="What Debug overlay does" data-tip="Shows a small panel on the page with technical details for troubleshooting. Turn on only when capturing a diagnostic report to send for a fix.">?</span>
+          </div>
           <label class="switch"><input type="checkbox" id="debug" /><span class="slider"></span></label>
         </div>
-        <p class="hint">Open DevTools and run <code>__NOTION_TURBO_TRIM_STATS__()</code> to see what the trimmer did.</p>
         <div class="row">
-          <label for="diagSave">Diagnostic report</label>
+          <div class="lbl">
+            <label for="diagSave">Diagnostic report</label>
+            <span class="help up" tabindex="0" role="note" aria-label="What Diagnostic report does" data-tip="Saves a JSON file describing the chat's structure — message order, sizes, and timing — with no message text. Send it over so the problem can be reproduced and fixed.">?</span>
+          </div>
           <button type="button" id="diagSave" class="btn">Download report</button>
         </div>
-        <p class="hint">Turn on <strong>Debug</strong>, reload the affected chat, scroll through the messages that look wrong, then click to save a JSON report (structure only — no message text) you can send back for a fix. Or run <code>__NOTION_TURBO_DIAG_SAVE__()</code> in DevTools.</p>
       </details>
     </main>
 
