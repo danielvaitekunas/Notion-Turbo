@@ -44,7 +44,7 @@ Works on Google Chrome, Microsoft Edge, and other Chromium-based browsers.
 
 ## Usage
 
-1. Open any Notion AI chat at `notion.com`.
+1. Open any Notion AI chat at `app.notion.com`.
 2. Click the **Notion Turbo** icon in your browser toolbar.
 3. Turn on **“recent exchanges only”** and set how many exchanges to keep.
 4. Reload the chat — long threads now load fast and stay responsive.
